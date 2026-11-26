@@ -1,0 +1,73 @@
+version: '1.0'
+stage: 'Stage 4 locked internal robustness and publication readiness'
+status: 'frozen before Stage 4 fitting'
+scientific_hierarchy:
+  primary: 'Stage 3B common-core ridge remains confirmatory'
+  exploratory: 'Stage 3C algorithm benchmark remains post hoc exploratory'
+  stage4: 'Post hoc robustness; cannot promote or replace Stage 3B'
+prohibitions:
+  - new algorithm families
+  - tuning-grid expansion
+  - favorable seed selection
+  - global feature selection
+  - threshold optimization
+  - clinical deployment claims
+outer_splits: 'Exact saved Stage 3B 5-fold x 10-repeat assignments'
+selector_audit:
+  candidates:
+    - refined_broad_ridge
+    - broad_lasso
+    - refined_broad_elastic_net
+    - linear_svc
+    - rbf_svc
+    - random_forest
+    - xgboost
+    - adaboost
+  selection_rule: 'Within each outer-training split, choose the family with the minimum saved inner-CV log loss; evaluate its untouched saved outer-test predictions.'
+  primary_comparator: refined_broad_ridge
+  secondary_comparator: stage3b_broad_ridge
+semantic_ablations:
+  outcomes:
+    - NoHandJointInvolvement
+    - AsymmetricArthritis
+  models:
+    - refined_broad_ridge
+    - xgboost
+  remove_exact:
+    - DASJointCountTEN28
+    - DASJointCountSW
+    - MeanGripStrength
+    - InitialSiteJoint
+  remove_name_contains:
+    - Involvement
+  interpretation: 'Measures dependence on contemporaneous joint/anatomy information; not a new predictor-selection search.'
+model_search:
+  objective: neg_log_loss
+  ridge_candidates: 21
+  xgboost_random_candidates: 50
+  inner_folds: 5
+  natural_prevalence: true
+  class_weight: null
+  resampling: none
+checkpointing:
+  granularity: 'one signed checkpoint per outcome, ablation model, outer repeat, and outer fold'
+  incompatible_signatures_reused: false
+uncertainty:
+  patient_bootstrap_resamples: 2000
+  calibration_band_resamples: 500
+subgroups:
+  evaluation_only_no_refitting: true
+  age_groups:
+    - '<40'
+    - '40-59'
+    - '>=60'
+  sex: Gender
+  missingness_burden: 'tertiles of row-wise missing proportion, calculated separately by outcome'
+  minimum_events_and_nonevents_for_metrics: 20
+reporting:
+  frameworks:
+    - TRIPOD+AI
+    - PROBAST+AI
+  figures:
+    raster_dpi: 400
+    vector_svg: true

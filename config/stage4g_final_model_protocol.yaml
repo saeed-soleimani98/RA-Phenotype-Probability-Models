@@ -1,0 +1,112 @@
+version: '1.0'
+stage: 'Stage 4G final reproducible full-cohort model fitting and packaging'
+status: 'frozen before Stage 4G fitting'
+scientific_hierarchy:
+  primary_models: 'Stage 3B common-core ridge for all three outcomes'
+  secondary_models: 'Broad ridge for all outcomes'
+  exploratory_challengers: 'XGBoost for NoHandJointInvolvement and AsymmetricArthritis only'
+  performance_evidence: 'Previously reported repeated nested OOF estimates only'
+  prohibition: 'Full-cohort apparent performance must not be calculated or reported'
+intended_use:
+  status: 'Research-use-only development models'
+  task: 'Contemporaneous probability estimation of each phenotype at a full rheumatology assessment'
+  population: 'Patients represented by the 820-person development cohort'
+  not_supported:
+    - autonomous diagnosis
+    - future prognosis
+    - pre-examination screening when joint/anatomy predictors are unavailable
+    - treatment decisions
+    - use outside the development setting without external validation
+outcomes:
+  - NegRFandACCP
+  - NoHandJointInvolvement
+  - AsymmetricArthritis
+excluded_outcomes:
+  - OnlyLargeJoints
+final_models:
+  NegRFandACCP:
+    - model: core_ridge
+      status: primary
+      predictor_scope: common_core
+    - model: refined_broad_ridge
+      status: secondary
+      predictor_scope: primary_eligible
+  NoHandJointInvolvement:
+    - model: core_ridge
+      status: primary
+      predictor_scope: common_core
+    - model: refined_broad_ridge
+      status: secondary
+      predictor_scope: primary_eligible
+    - model: xgboost
+      status: exploratory_challenger
+      predictor_scope: primary_eligible
+  AsymmetricArthritis:
+    - model: core_ridge
+      status: primary
+      predictor_scope: common_core
+    - model: refined_broad_ridge
+      status: secondary
+      predictor_scope: primary_eligible
+    - model: xgboost
+      status: exploratory_challenger
+      predictor_scope: primary_eligible
+common_core_predictors:
+  - Age
+  - Gender
+  - RADurationDays
+  - DASJointCountTEN28
+  - DASJointCountSW
+  - PatientGlobalAssessment
+  - AbnormalCRPorESR
+preprocessing:
+  learned_on: 'All 820 development patients for the final fitted artifact'
+  RADurationDays: log1p
+  numeric: 'median imputation then standardization'
+  binary: 'most-frequent imputation'
+  categorical: 'constant Unknown imputation then fixed-level one-hot encoding with first level dropped'
+  missingness_indicators: 'numeric and binary predictors with any missing value in the full development data'
+  prevalence: natural
+  class_weight: null
+  resampling: none
+final_tuning:
+  objective: neg_log_loss
+  cross_validation: 'Repeated stratified 5-fold CV with 10 repetitions on all development data'
+  seed: 20261020
+  core_ridge_grid: 'Stage 3B 13-value logspace C from 1e-4 to 1e4'
+  broad_ridge_grid: 'Stage 3C 21-value logspace C from 0.003 to 0.5'
+  xgboost_candidates: '50 deterministic candidates sampled from the locked Stage 3C space'
+  ridge_selection: 'One-standard-error rule: smallest C within one SE of minimum mean CV log loss'
+  xgboost_selection: 'Among candidates within one SE of minimum mean CV log loss, deterministic simplicity ordering: shallower depth, fewer trees, larger min_child_weight, larger regularization, then candidate index'
+prohibitions:
+  - new predictors
+  - new model families
+  - new tuning ranges
+  - outcome-guided feature selection
+  - resampling
+  - class weighting
+  - threshold optimization
+  - calibration fitted on full data
+  - apparent full-data performance
+  - promotion of secondary or exploratory models to primary
+packaging:
+  serialization: joblib
+  required:
+    - complete fitted preprocessing-plus-model pipeline
+    - exact raw and transformed predictor lists
+    - predictor data dictionary
+    - selected hyperparameters and tuning table
+    - ridge coefficient table where applicable
+    - software versions and seed
+    - SHA-256 checksums
+    - model card
+    - synthetic example input and expected output
+    - reload-and-predict validation
+    - batch prediction command-line script
+    - external-validation specification
+reporting:
+  frameworks:
+    - TRIPOD+AI
+    - PROBAST+AI
+  external_validation_required: true
+  clinical_use_allowed: false

@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "Please cite the associated article and this repository. Complete all owner-action placeholders before release."
+title: "Rheumatoid arthritis cross-sectional phenotype probability models: analytical code"
+type: software
+authors:
+  - family-names: "[OWNER_ACTION: family name]"
+    given-names: "[OWNER_ACTION: given name]"
+version: "[OWNER_ACTION: v1.0.0-review or approved release]"
+date-released: "[OWNER_ACTION: YYYY-MM-DD]"
+doi: "[OWNER_ACTION: repository archive DOI]"
+repository-code: "[OWNER_ACTION: final public or private reviewer URL]"
+url: "[OWNER_ACTION: project or article URL]"
+abstract: >-
+  Analytical code for cross-sectional phenotype probability modeling in rheumatoid
+  arthritis, including output-free notebooks, frozen protocols, repeated nested
+  validation logic, robustness and missingness analyses, and SHAP procedures.
+  Participant-level data and derived patient-level artifacts are not included.
+license: "[OWNER_ACTION: owner-selected SPDX identifier]"
+keywords:
+  - rheumatoid arthritis
+  - cross-sectional phenotype probability
+  - internal validation
+  - SHAP
+  - TRIPOD+AI
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "[OWNER_ACTION: family name]"
+      given-names: "[OWNER_ACTION: given name]"
+  title: "[OWNER_ACTION: manuscript title]"
+  journal: "[OWNER_ACTION: journal]"
+  year: "[OWNER_ACTION: year]"
+  doi: "[OWNER_ACTION: article DOI]"

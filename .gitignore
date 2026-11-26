@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Notebooks
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+*.html
+
+# Local configuration and secrets (never commit real values)
+.env
+.env.*
+!.env.example
+
+# Restricted clinical data / patient-level derivatives (never commit)
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.arrow
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.joblib
+*.npy
+*.npz
+*.onnx
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.zip
+*.tar
+*.gz
+*.7z
+raw_data/
+cleaned_data/
+derived_data/
+uploads/
+predictions/
+fold_assignments/
+patient_level/
+shap_values/
+modeling_results*/
+final_model_package/
+checkpoints/
+outputs/
+artifacts/
+data/
+reports/
+
+# Approved non-sensitive tabular exceptions (explicit allowlist)
+!docs/ORIGINAL_SOURCE_FILE_MANIFEST.tsv
+!docs/FILE_INVENTORY_SHA256.tsv
+!FILE_MANIFEST.tsv
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*~
+.idea/
+.vscode/

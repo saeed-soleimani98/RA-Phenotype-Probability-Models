@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=1024']
+      - id: check-case-conflict
+      - id: detect-private-key
+
+  - repo: local
+    hooks:
+      - id: static-tests
+        name: data-free static tests
+        entry: python -m pytest -q tests
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: privacy-audit
+        name: privacy/disclosure audit
+        entry: python tools/privacy_audit.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+# Optional local secret scanning (owner decision; not run in CI by default):
+#   pip install detect-secrets && detect-secrets scan > .secrets.baseline
+#   gitleaks detect --source . --no-git

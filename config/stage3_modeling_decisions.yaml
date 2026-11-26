@@ -1,0 +1,111 @@
+version: '1.0'
+stage: 'Stage 3 modeling protocol decisions'
+status: 'frozen before model fitting'
+outcomes:
+  - NegRFandACCP
+  - NoHandJointInvolvement
+  - AsymmetricArthritis
+complexity_hierarchy:
+  confirmatory_primary: 'Clinically prespecified common core within formal parameter budget'
+  exploratory_secondary: 'Broad all-eligible penalized models'
+  reason: 'Current broad sets create 95-99 independent parameters; Riley feasibility screen supports about 9 under adjusted Nagelkerke R2=0.15.'
+common_core_predictors:
+  - Age
+  - Gender
+  - RADurationDays
+  - DASJointCountTEN28
+  - DASJointCountSW
+  - PatientGlobalAssessment
+  - AbnormalCRPorESR
+estimated_core_parameters: 9
+transformations:
+  RADurationDays: 'log1p, then training-fold standardization'
+  Age: 'linear, training-fold standardization'
+  DASJointCountTEN28: 'linear, training-fold standardization'
+  DASJointCountSW: 'linear, training-fold standardization'
+  PatientGlobalAssessment: 'linear, training-fold standardization'
+  Gender: 'binary categorical encoding with a fixed documented reference level'
+  AbnormalCRPorESR: 'binary; most-frequent training-fold imputation plus missingness indicator'
+  nonlinear_sensitivity: 'Limited restricted-spline sensitivity only; not confirmatory'
+model_hierarchy:
+  confirmatory_primary:
+    model: 'ridge logistic regression'
+    tuning: 'L2 penalty tuned only within inner cross-validation'
+  confirmatory_benchmark:
+    model: 'ordinary logistic regression'
+    predictors: 'same common core and preprocessing'
+  exploratory_broad:
+    model: 'ridge logistic regression'
+    predictors: 'all Stage 2 primary-eligible predictors'
+  exploratory_sparse:
+    model: 'elastic-net logistic regression'
+    predictors: 'all Stage 2 primary-eligible predictors'
+  excluded_model_families:
+    - boosting
+    - random forest
+    - support vector machine
+    - neural network
+    - large model zoo
+tuning:
+  primary_objective: 'minimize inner-fold log loss'
+  forbidden_primary_objective: 'AUROC-only tuning'
+class_imbalance:
+  primary: 'unweighted loss with stratified resampling'
+  sensitivity: 'balanced class weights'
+  excluded:
+    - SMOTE
+    - undersampling
+validation:
+  outer: 'Repeated stratified 5-fold cross-validation, 10 repetitions'
+  inner: 'Stratified 5-fold cross-validation'
+  prediction_rule: 'Every reported development-performance prediction must be out-of-fold'
+  repeated_prediction_rule: 'Average each patient’s 10 out-of-fold probabilities'
+  shared_splits: 'Use identical outer splits for all compared models within an outcome'
+uncertainty:
+  confidence_intervals: '2,000 stratified subject-level bootstrap resamples of averaged out-of-fold predictions'
+  stability: 'Report outer-fold and repetition distributions separately'
+  prohibition: 'Do not treat 50 correlated outer-fold results as independent observations'
+calibration:
+  primary: 'Assess unmodified ridge probabilities'
+  required_outputs:
+    - calibration intercept
+    - calibration slope
+    - flexible calibration curve
+    - Brier score
+  recalibration_sensitivity: 'Training-only logistic recalibration if material miscalibration is observed'
+  excluded:
+    - full-dataset recalibration
+    - routine isotonic calibration
+thresholds:
+  primary_threshold: null
+  policy: 'Probability prediction is primary; report threshold metrics over a prespecified grid'
+  excluded:
+    - fixed 0.50 as primary
+    - Youden threshold as primary
+  decision_curve: 'Only over clinically plausible thresholds tied to a defined action'
+explainability:
+  method: 'Strictly out-of-fold SHAP'
+  aggregation: 'Average per-patient explanations across outer repetitions'
+  required_outputs:
+    - mean absolute SHAP
+    - direction of effect
+    - rank stability
+    - sign stability
+    - grouped clinical-domain importance
+    - standardized ridge coefficients
+  categorical_rule: 'Aggregate encoded levels to the original clinical variable'
+  separation: 'Keep confirmatory-core and exploratory-broad explanations separate'
+  interpretation: 'Predictive association, not causality'
+model_comparison:
+  approach: 'Estimation, not winner testing'
+  outputs: 'Paired bootstrap differences with 95% confidence intervals'
+  p_values: false
+  multiplicity_testing: false
+  confirmatory_model_fixed: true
+  rule: 'Core ridge remains confirmatory regardless of small secondary metric differences'
+reporting_standards:
+  - TRIPOD+AI
+  - PROBAST+AI
+external_validation:
+  available: false
+  manuscript_statement: 'Internal validation only; external validation remains required before clinical use.'

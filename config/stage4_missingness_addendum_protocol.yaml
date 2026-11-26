@@ -1,0 +1,73 @@
+version: '1.0'
+stage: 'Stage 4 locked missingness-mechanism addendum'
+status: 'frozen before missingness-addendum fitting'
+date_frozen: '2026-10-20'
+scientific_hierarchy:
+  primary: 'Stage 3B common-core ridge remains the prespecified confirmatory primary analysis'
+  exploratory: 'Stages 3C, Stage 4, and this addendum are post hoc exploratory robustness analyses'
+  purpose: 'Characterize dependence on missing-data and local data-collection mechanisms; not model optimization'
+prohibitions:
+  - new algorithm families
+  - tuning-grid expansion
+  - outcome-guided missingness-threshold selection
+  - global supervised feature selection
+  - favorable seed selection
+  - resampling or synthetic oversampling
+  - class weighting
+  - threshold optimization
+  - subgroup model fitting
+  - promotion over Stage 3B
+  - clinical deployment claims
+outcomes:
+  - NegRFandACCP
+  - NoHandJointInvolvement
+  - AsymmetricArthritis
+excluded_outcomes:
+  - OnlyLargeJoints
+outer_splits: 'Exact saved Stage 3B 5-fold x 10-repeat assignments'
+inner_tuning:
+  objective: neg_log_loss
+  folds: 5
+  prevalence: natural
+  ridge_C_grid: 'Same 21-value Stage 4 log-spaced grid from 0.003 to 0.5'
+  xgboost_search: 'Same locked Stage 4 50-candidate random search space and deterministic split-specific seed'
+analyses:
+  missingness_only:
+    outcomes: 'all three'
+    model: refined_broad_ridge
+    predictors: 'One binary missingness indicator for every primary-eligible predictor; complete predictors remain all-zero indicators and are not outcome-selected'
+  no_explicit_missingness_indicators:
+    outcomes: 'all three for ridge; NoHandJointInvolvement only for XGBoost'
+    models:
+      - refined_broad_ridge
+      - xgboost
+    rule: 'Retain the frozen imputations but omit the extra numeric/binary MissingnessFlags transformer. Categorical missing values continue to follow the frozen Unknown-category imputation.'
+  near_complete_predictors:
+    outcomes: 'all three'
+    model: refined_broad_ridge
+    threshold: 0.05
+    rule: 'Within each outer training split, retain predictors with training-set missing proportion <=0.05; never inspect outer-test missingness or outcomes for inclusion.'
+  descriptive_missingness:
+    - predictor-level missingness by outcome status
+    - absolute prevalence difference and standardized difference for each missingness indicator
+    - outcome prevalence by missingness-burden tertile
+    - most common exact missingness patterns
+    - availability check for true site, center, calendar-date, or calendar-year fields
+comparators:
+  ridge: refined_broad_ridge
+  xgboost: xgboost
+metrics:
+  - auroc
+  - average_precision
+  - log_loss
+  - brier
+  - calibration_intercept
+  - calibration_slope
+uncertainty:
+  patient_bootstrap_resamples: 2000
+  method: 'Stratified paired patient bootstrap after averaging each patient over 10 outer repeats'
+checkpointing:
+  granularity: 'one signed checkpoint per outcome, sensitivity strategy, model, outer repeat, and outer fold'
+reporting:
+  interpretation: 'A strong missingness-only model or material deterioration without explicit indicators indicates reliance on local testing/documentation workflow and limits transportability.'
+  stop_rule: 'After this addendum, stop internal model development and proceed to manuscript preparation and future external validation.'

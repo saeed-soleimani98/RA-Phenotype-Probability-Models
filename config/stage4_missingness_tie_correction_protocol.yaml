@@ -1,0 +1,43 @@
+version: '1.0'
+stage: 'Stage 4 missingness-burden tie correction'
+status: 'corrective analysis frozen after detection of rank-based tie-splitting defect'
+scientific_status: 'Post hoc descriptive correction; no model fitting or model selection'
+reason: 'The earlier qcut(rank(method=first)) implementation split identical missingness burdens by source-row order, which was outcome-ordered.'
+supersedes:
+  - 'Stage 4 and Stage 4M low/middle/high missingness-burden tertile prevalence values'
+  - 'Stage 4 missingness_group subgroup performance rows generated from rank(method=first) groups'
+does_not_affect:
+  - fitted models
+  - repeated OOF predictions
+  - patient-averaged OOF predictions
+  - overall performance estimates
+  - paired model comparisons
+  - missingness-only sensitivity models
+  - no-explicit-indicator sensitivity models
+  - near-complete-predictor sensitivity models
+  - predictor-level missingness summaries
+outcomes:
+  - NegRFandACCP
+  - NoHandJointInvolvement
+  - AsymmetricArthritis
+excluded_outcomes:
+  - OnlyLargeJoints
+group_definition:
+  complete: 'row-wise missing fraction == 0'
+  low_nonzero: '0 < row-wise missing fraction <= 0.05'
+  high: 'row-wise missing fraction > 0.05'
+  rationale: 'Tie-preserving descriptive categories aligned with the previously frozen 5% near-complete threshold.'
+  inferential_status: 'Post hoc corrective descriptive grouping selected after the defect was identified; not prespecified and not for model selection.'
+subgroup_evaluation:
+  refitting: false
+  predictions: 'Previously saved patient-averaged OOF predictions only'
+  minimum_events_and_nonevents: 20
+  bootstrap_resamples: 2000
+  bootstrap: 'Outcome-stratified patient bootstrap within each group'
+outputs:
+  - corrected burden prevalence table
+  - corrected locked-model missingness-group performance
+  - corrected missingness-sensitivity subgroup performance
+  - corrected publication figure
+  - correction note and audit
+stop_rule: 'After this correction, stop internal analysis and proceed to manuscript preparation.'

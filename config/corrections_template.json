@@ -1,0 +1,9 @@
+[
+  {
+    "VisitID": "<authorized identifier supplied at runtime>",
+    "variable": "<exact source column name>",
+    "expected_original": "<numeric value from the authorized source, or null>",
+    "clean_value": "<corrected numeric value, or null for missing>",
+    "reason": "<investigator-approved reason>"
+  }
+]

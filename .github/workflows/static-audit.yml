@@ -1,0 +1,47 @@
+name: Static audit (no clinical data)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository only
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+
+      - name: Install data-free dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r environment/requirements.txt
+
+      - name: Run static and schema-level tests
+        run: python -m pytest -q tests
+
+      - name: Run privacy/disclosure audit
+        run: python tools/privacy_audit.py --json privacy-audit-ci.json
+
+      - name: Upload audit report (text only)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: privacy-audit-report
+          path: privacy-audit-ci.json
+          if-no-files-found: ignore
+
+# CI never requests, mounts, downloads or receives the clinical dataset.
+# No code scanning action is enabled by default; enabling it is an owner decision
+# contingent on confirming that no restricted runtime artifact is uploaded.
