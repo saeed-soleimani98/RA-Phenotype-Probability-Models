@@ -1,8 +1,5 @@
 # Rheumatoid arthritis cross-sectional phenotype probability models — analytical code for journal review
 
-> **Repository status: OWNER-APPROVED FOR PUBLIC RELEASE — publication pending push.**
-> Repository: `https://github.com/saeed-soleimani98/RA-Phenotype-Probability-Models` · Default branch: `main`.
-> The owner authorized public sharing after reviewing the privacy audit. Author/license/DOI/archive metadata remain owner-action placeholders in `CITATION.cff` and `RELEASE_CHECKLIST.md`; no release or archive has been created.
 
 ## Purpose and scientific boundary
 
