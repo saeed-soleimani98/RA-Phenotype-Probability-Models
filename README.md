@@ -1,6 +1,5 @@
 # Rheumatoid arthritis cross-sectional phenotype probability models — analytical code for journal review
 
-
 ## Purpose and scientific boundary
 
 This repository contains the complete analytical code for a cross-sectional study of three rheumatoid arthritis (RA) phenotype definitions:
